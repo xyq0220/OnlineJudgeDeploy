@@ -44,7 +44,6 @@ services:
       # - judger_debug=1
   
   oj-backend:
-    #image: registry.cn-hangzhou.aliyuncs.com/onlinejudge/oj_backend
     image: xyq0220/onlinejudge:oj-backend
     container_name: oj-backend
     restart: always
@@ -59,8 +58,19 @@ services:
       - POSTGRES_USER=onlinejudge
       - POSTGRES_PASSWORD=onlinejudge
       - JUDGE_SERVER_TOKEN=CHANGE_THIS
-      # - FORCE_HTTPS=1
-      # - STATIC_CDN_HOST=cdn.oj.com
     ports:
       - "0.0.0.0:80:8000"
       - "0.0.0.0:443:1443"
+
+  oj-rsync-master:
+    image: registry.cn-hangzhou.aliyuncs.com/onlinejudge/oj_rsync
+    container_name: oj-rsync-master
+    volumes:
+      - $PWD/data/backend/test_case:/test_case:ro
+      - $PWD/data/rsync_master:/log
+    environment:
+      - RSYNC_MODE=master
+      - RSYNC_USER=ojrsync
+      - RSYNC_PASSWORD=CHANGE_THIS_PASSWORD
+    ports:
+      - "0.0.0.0:873:873"
